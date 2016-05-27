@@ -94,7 +94,7 @@ d3.xml("racedata.xml", function(error, data) {
     myAsyncCounter.increment();
 })
 
-var _sqSize = Math.floor(window.innerWidth/2);
+var _sqSize = 600;//Math.floor(window.innerWidth/2);
 var _xAxis;
 var _yAxis;
 var _x;

@@ -73,24 +73,32 @@ d3.xml("racedata.xml", function(error, data) {
     // Convert the XML document to an array of objects.
     // Note that querySelectorAll returns a NodeList, not a proper Array,
     // so we must use map.call to invoke array methods.
-    _rdata = [].map.call(data.querySelectorAll("section"), function(section) {
-        return {
-            id: section.getAttribute("id"),
-            start: section.getAttribute("start"),
-            boats: [].map.call(section.querySelectorAll("boat"), function(boat) {
-                return {
-                    id: boat.getAttribute("id"),
-                    positions: [].map.call(boat.querySelectorAll("p"), function(p) {
-                        return {
-                            time: p.getAttribute("t"),
-                            lat: parseFloat(p.getAttribute("l")),
-                            lon: parseFloat(p.getAttribute("o"))
-                        }
-                    })
-                }
-            })
-        };
-    });
+    _rdata = [].map.call(data.querySelectorAll("race"), function(race) {
+     return {
+         date: race.getAttribute("date"),
+         couse: race.getAttribute("course"),
+         lat: race.getAttribute("rclat"),
+         lon: race.getAttribute("rclon"),
+         sections: [].map.call(race.querySelectorAll("section"), function(section) {
+             return {
+                 id: section.getAttribute("id"),
+                 start: section.getAttribute("start"),
+                 boats: [].map.call(section.querySelectorAll("boat"), function(boat) {
+                     return {
+                         id: boat.getAttribute("id"),
+                         positions: [].map.call(boat.querySelectorAll("p"), function(p) {
+                             return {
+                                 time: p.getAttribute("t"),
+                                 lat: parseFloat(p.getAttribute("l")),
+                                 lon: parseFloat(p.getAttribute("o"))
+                             }
+                         })
+                     }
+                 })
+             }
+         })
+     }
+     });
     myAsyncCounter.increment();
 })
 
@@ -133,8 +141,8 @@ function draw() {
     var minLon = Infinity;
     var maxLon = -Infinity;
 
-    _rdata.forEach(function(race) {
-        race.boats.forEach(function(boat) {
+    _rdata[0].sections.forEach(function(section) {
+        section.boats.forEach(function(boat) {
             boat.positions.forEach(function(position) {
                 minTime = Math.min(minTime, position.time)
                 maxTime = Math.max(maxTime, position.time)
@@ -145,15 +153,21 @@ function draw() {
             })
         })
     })
+    _wpdata.forEach(function(wp){
+        minLat = Math.min(minLat, wp.lat);
+        maxLat = Math.max(maxLat, wp.lat);
+        minLon = Math.min(minLon, wp.lon);
+        maxLon = Math.max(maxLon, wp.lon);
+    })
 
     _currMaxTime = maxTime;
 
     _x = d3.scale.linear()
-        .domain([-87.58117, -87.53250])
+        .domain([minLon, maxLon])
         .range([0, width]);
 
     _y = d3.scale.linear()
-        .domain([41.83, 41.87])
+        .domain([minLat, maxLat])
         .range([height, 0]);
 
     _xAxis = d3.svg.axis()
@@ -238,13 +252,21 @@ function draw() {
         .classed("dot", true)
         .attr("transform", transform)
         .attr("r", 6)
-        .attr("fill", "red");
-
+        .attr("fill", "red")
+        .append("svg:title")
+        .text(function(d) { return d.id; });
 
     var rc = _objects.selectAll(".dot[rc]")
+        .data(_rdata)
+        .enter().append("circle")
+        .classed("dot", true)
+        .attr("transform", transform)
+        .attr("r", 6)
+        .attr("fill", "orange")
+        .append("svg:title")
+        .text("Race Committee");
 
-
-    d3.select("#sections").selectAll("input")
+        d3.select("#sections").selectAll("input")
         .data(d3.set(_cdata.map(function(d) {
             return d.section;
         })).values())
@@ -393,13 +415,31 @@ function updatePos() {
     });
 
     //add positions with time lower than given as parameter
-    _rdata.forEach(function(race) {
-        race.boats.filter(function(boat) {
+    _rdata[0].sections.forEach(function(section) {
+        section.boats.filter(function(boat) {
                 return boatsSel.some(function(boatID) {
                     return boat.id === boatID;
                 })
             })
             .forEach(function(boat) {
+                 var points = _objects.selectAll(".pos[boat=" + boat.id + "]")
+                     .data([boat.positions[boat.positions.length-1]]) //only the last element to put tooltip on
+                     .enter()
+                     .append("circle")
+                     .classed("pos", true)
+                     .attr("transform", transform)
+                     .attr("r", 10)
+                     .attr("boat", boat.id)
+                     .attr("fill", "#000")
+                     .style("opacity", 0)
+                     .append("svg:title")
+                     .text(function(d) {
+                         var boatObj = boats.filter(function(bo) {
+                             return bo.id === boat.id;
+                         })
+                       return boatObj[0].name;
+                     });
+
                 var trace = _objects.selectAll(".trace[boat=" + boat.id + "]")
                     .data([boat.positions.filter(function(d) {
                         return d.time <= _currMaxTime
@@ -440,6 +480,9 @@ function zoomed() {
 
     _objects.selectAll(".dot")
         .attr("transform", transform);
+
+    _objects.selectAll(".pos")
+            .attr("transform", transform);
 
     _objects.selectAll("path")
             .attr("d", line);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <boats>
   <boat id="USA52293" name="Sorcerer" color="#172969" section="4" class="36.7" rating="" flag="4.png"/>
-  <boat id="USA235" name="Tequila Mockinbird" color="#3eacec" section="4" class="36.7" rating="" flag="4.png"/>
+  <boat id="USA235" name="Fake Boat3" color="#3eacec" section="4" class="36.7" rating="" flag="4.png"/>
   <boat id="USA1" name="Fake Boat" color="#0551be" section="1" class="T10" rating="" flag="1.png"/>
   <boat id="USA2" name="Fake Boat2" color="#b61e23" section="2" class="ORR 2" rating="" flag="2.png"/>
 </boats>

@@ -19,15 +19,44 @@
   <body>
     <header>
       <div class="inner">
-        <h1>Beer Can Races Tracker</h1>
-        <h2>The Race tracker</h2>
+        <h1>Race</h1>
+        <h2>Course</h2>
       </div>
     </header>
 
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-        
+          <script type="text/javascript" src="../../javascripts/d3.slider.js"></script>
+          <script type="text/javascript" src="../../javascripts/chart.js"></script>
+          <table class="center">
+            <tr>
+              <td>
+                <div id="chart"></div>
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    Sections
+                    <div id="sections"></div>
+                  </tr>
+                  <tr>
+                    Classes
+                    <div id="classes"></div>
+                  </tr>
+                  <tr>
+                    Boats
+                    <div id="boats"></div>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div id="slider"></div>
+              </td>
+            </tr>
+          </table>
         </section>
       </div>
     </div>

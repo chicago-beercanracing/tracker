@@ -47,7 +47,7 @@ d3.xml("../../common/waypoints.xml", function(error, data) {
 
 
 var _cdata;
-d3.xml("../../common/classes.xml", function(error, data) {
+d3.xml("../../common/boats.xml", function(error, data) {
     if (error) throw error;
     // Convert the XML document to an array of objects.
     // Note that querySelectorAll returns a NodeList, not a proper Array,

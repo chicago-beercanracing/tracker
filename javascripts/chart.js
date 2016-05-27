@@ -94,6 +94,7 @@ d3.xml("racedata.xml", function(error, data) {
     myAsyncCounter.increment();
 })
 
+var _sqSize = Math.floor(window.innerWidth/2);
 var _xAxis;
 var _yAxis;
 var _x;
@@ -106,8 +107,8 @@ var _margin = {
         bottom: 30,
         left: 40
     },
-    width = 600 - _margin.left - _margin.right,
-    height = 600 - _margin.top - _margin.bottom;
+    width = _sqSize - _margin.left - _margin.right,
+    height = _sqSize - _margin.top - _margin.bottom;
 var _currMaxTime = 0;
 
 
@@ -223,7 +224,7 @@ function draw() {
         .value(maxTime)
 
     d3.select("#slider")
-        .style("width", 600 + 'px')
+        .style("width", _sqSize + 'px')
         .call(slider);
 
     _objects = _svg.append("svg")

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <script src="https://d3js.org/d3.v3.min.js"></script>	
+      <link rel="stylesheet" href="../../stylesheets/d3.slider.css" /> 
+      <link rel="stylesheet" href="../../stylesheets/page.css" />
+   </head>
+   <meta charset="utf-8">
+   <style>
+      body {
+      position: relative;
+      width: 960px;
+      }
+      svg {
+      font: 10px sans-serif;
+      shape-rendering: crispEdges;
+      }
+      rect {
+      fill: #ddd;
+      }
+      .axis path,
+      .axis line {
+      fill: none;
+      stroke: #fff;
+      }
+   </style>
+   <body>
+      <script type="text/javascript" src="../../javascripts/d3.slider.js"></script>
+      <script type="text/javascript" src="../../javascripts/chart.js"></script>
+      <table class="center">
+        <tr>
+          <td>
+            <div id="chart"></div>
+          </td>
+          <td>
+            <table>
+            <tr>
+              Sections
+              <div id="sections"></div>
+            </tr>
+            <tr>
+              Classes
+              <div id="classes"></div>
+            </tr>
+            <tr>
+              Boats
+              <div id="boats"></div>
+            </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div id="slider"></div>
+          </td>
+        </tr>
+      </table>
+   </body>
+</html>

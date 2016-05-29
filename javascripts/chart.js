@@ -1,4 +1,8 @@
-/* global Infinity */
+/*
+* Copyright (c) 2016, David Dieffenthaler.  All rights reserved.
+* Copyrights licensed under the New BSD License.
+* See the accompanying LICENSE file for terms.
+*/
 
 function asyncCounter(numCalls, callback) {
     this.callback = callback;

@@ -4,6 +4,8 @@
 * See the accompanying LICENSE file for terms.
 */
 
+/* global tickFn */
+
 function asyncCounter(numCalls, callback) {
     this.callback = callback;
     this.numCalls = numCalls;
@@ -15,7 +17,7 @@ asyncCounter.prototype.increment = function () {
     if (this.calls >= this.numCalls) {
         this.callback();
     }
-}
+};
 
 var myAsyncCounter = new asyncCounter(3, draw);
 
@@ -42,12 +44,12 @@ d3.xml("../../common/waypoints.xml", function (error, data) {
             wps: [].map.call(course.querySelectorAll("m"), function (mark) {
                 return {
                     id: mark.getAttribute("id")
-                }
+                };
             })
         };
     });
     myAsyncCounter.increment();
-})
+});
 
 var _cdata;
 d3.xml("../../common/boats.xml", function (error, data) {
@@ -65,10 +67,10 @@ d3.xml("../../common/boats.xml", function (error, data) {
             clas: boat.getAttribute("class"),
             rating: boat.getAttribute("rating"),
             flag: boat.getAttribute("flag")
-        }
+        };
     });
     myAsyncCounter.increment();
-})
+});
 
 var _rdata;
 d3.xml("racedata.xml", function (error, data) {
@@ -96,16 +98,16 @@ d3.xml("racedata.xml", function (error, data) {
                                     time: p.getAttribute("t"),
                                     lat: parseFloat(p.getAttribute("l")),
                                     lon: parseFloat(p.getAttribute("o"))
-                                }
+                                };
                             })
-                        }
+                        };
                     })
-                }
+                };
             })
-        }
+        };
     });
     myAsyncCounter.increment();
-})
+});
 
 var _sqSize = 600;//Math.floor(window.innerWidth/2);
 var _xAxis;
@@ -141,7 +143,9 @@ var boatMarkLine = d3.svg.line()
         })
         .interpolate("cardinal-closed");
 
-
+var _timerStep = 1;
+var _timerEnabled = true;
+var _slider;
 function draw() {
 
     var minTime = Infinity;
@@ -242,17 +246,17 @@ function draw() {
             .attr("class", "y axis")
             .call(_yAxis);
 
-    var slider = d3.slider()
+    _slider = d3.slider()
             .axis(true)
             .min(minTime)
             .max(maxTime)
             .step(1)
             .on("slide", slide)
-            .value(maxTime);
+            .value(minTime);
 
     d3.select("#slider")
-            .style("width", _sqSize + 'px')
-            .call(slider);
+            .style("width", _sqSize + 100 + 'px')
+            .call(_slider);
 
     _objects = _svg.append("svg")
             .classed("objects", true)
@@ -301,7 +305,34 @@ function draw() {
     updateClasses();
     updateBoats();
     updatePos();
+    
+    setInterval(tickFn, 100); //100 ms interval
+    _timerStep = (maxTime-minTime)/600; //600 * 100ms interval = 1 min total replay time
+    _timerEnabled = true;
+    d3.select("#startbtn").text("Pause");
+}
 
+function ToogleTimer()
+{
+    _timerEnabled = !_timerEnabled;
+    if(_timerEnabled){
+        d3.select("#startbtn").text("Pause");
+    }
+    else{
+        d3.select("#startbtn").text("Start");
+    }
+}
+
+function tickFn()
+{
+    if(_timerEnabled){
+        var time = Math.min(_slider.value()+_timerStep, _slider.max());
+        if(_currMaxTime != time){//to save CPU from redrawing un-necessarly
+            _currMaxTime = time;
+            _slider.value(time);
+            updatePos();
+        }
+    }
 }
 
 function inputSectionClick() {
@@ -356,6 +387,9 @@ function inputClassClick() {
 }
 
 function slide(evt, posixTime) {
+    if(_timerEnabled){
+        ToogleTimer();
+    }
     _currMaxTime = posixTime;
     updatePos();
 }

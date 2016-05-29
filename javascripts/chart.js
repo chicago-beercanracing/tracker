@@ -304,7 +304,7 @@ function draw() {
 
     updateClasses();
     updateBoats();
-    updatePos();
+    //updatePos();
     
     setInterval(tickFn, 100); //100 ms interval
     _timerStep = (maxTime-minTime)/600; //600 * 100ms interval = 1 min total replay time
@@ -316,6 +316,9 @@ function ToogleTimer()
 {
     _timerEnabled = !_timerEnabled;
     if(_timerEnabled){
+        if(_slider.value() === _slider.max()){
+            _slider.value(_slider.min());
+        }
         d3.select("#startbtn").text("Pause");
     }
     else{
@@ -332,7 +335,11 @@ function tickFn()
             _slider.value(time);
             updatePos();
         }
+        if(_slider.value() === _slider.max()){
+            ToogleTimer();
+        }
     }
+    
 }
 
 function inputSectionClick() {

@@ -1,80 +1,79 @@
-<?xml version="1.0" encoding="utf-8"?>
 <data>
-<waypoints>
-        <wp id="SA7" lat="41.85283" lon="-87.55683"/>
-        <wp id="1" lat="41.871" lon="-87.55683"/>
-        <wp id="2" lat="41.86567" lon="-87.5395"/>
-        <wp id="3" lat="41.85283" lon="-87.5325"/>
-        <wp id="4" lat="41.84" lon="-87.5395"/>
-        <wp id="5" lat="41.83467" lon="-87.55683"/>
-        <wp id="6" lat="41.84" lon="-87.574"/>
-        <wp id="7" lat="41.85283" lon="-87.58117"/>
-        <wp id="8" lat="41.86567" lon="-87.574"/>
-</waypoints>
-<courses>
-        <course name="1" length="5.37">
-                <m id="SA7"/>
-                <m id="1"/>
-                <m id="8"/>
-                <m id="6"/>
-                <m id="5"/>
-                <m id="SA7"/>
-        </course>
-        <course name="2" length="5.37">
-                <m id="SA7"/>
-                <m id="2"/>
-                <m id="1"/>
-                <m id="7"/>
-                <m id="6"/>
-                <m id="SA7"/>
-        </course>
-        <course name="3" length="5.37">
-                <m id="SA7"/>
-                <m id="3"/>
-                <m id="2"/>
-                <m id="8"/>
-                <m id="7"/>
-                <m id="SA7"/>
-        </course>
-        <course name="4" length="5.37">
-                <m id="SA7"/>
-                <m id="4"/>
-                <m id="3"/>
-                <m id="1"/>
-                <m id="8"/>
-                <m id="SA7"/>
-        </course>
-        <course name="5" length="5.37">
-                <m id="SA7"/>
-                <m id="5"/>
-                <m id="4"/>
-                <m id="2"/>
-                <m id="1"/>
-                <m id="SA7"/>
-        </course>
-        <course name="6" length="5.37">
-                <m id="SA7"/>
-                <m id="6"/>
-                <m id="5"/>
-                <m id="3"/>
-                <m id="2"/>
-                <m id="SA7"/>
-        </course>
-        <course name="7" length="5.37">
-                <m id="SA7"/>
-                <m id="7"/>
-                <m id="6"/>
-                <m id="4"/>
-                <m id="3"/>
-                <m id="SA7"/>
-        </course>
-        <course name="8" length="5.37">
-                <m id="SA7"/>
-                <m id="8"/>
-                <m id="7"/>
-                <m id="5"/>
-                <m id="4"/>
-                <m id="SA7"/>
-        </course>
-</courses>
+  <waypoints>
+    <wp id="SA7" lon="-87.55683" lat="41.85283" />
+    <wp id="1" lon="-87.55683" lat="41.871" />
+    <wp id="2" lon="-87.5395" lat="41.86567" />
+    <wp id="3" lon="-87.5325" lat="41.85283" />
+    <wp id="4" lon="-87.5395" lat="41.84" />
+    <wp id="5" lon="-87.55683" lat="41.83467" />
+    <wp id="6" lon="-87.574" lat="41.84" />
+    <wp id="7" lon="-87.58117" lat="41.85283" />
+    <wp id="8" lon="-87.574" lat="41.86567" />
+  </waypoints>
+  <courses>
+    <course name="1" length="5.37">
+      <m id="SA7" />
+      <m id="1" />
+      <m id="8" />
+      <m id="6" />
+      <m id="5" />
+      <m id="SA7" />
+    </course>
+    <course name="2" length="5.37">
+      <m id="SA7" />
+      <m id="2" />
+      <m id="1" />
+      <m id="7" />
+      <m id="6" />
+      <m id="SA7" />
+    </course>
+    <course name="3" length="5.37">
+      <m id="SA7" />
+      <m id="3" />
+      <m id="2" />
+      <m id="8" />
+      <m id="7" />
+      <m id="SA7" />
+    </course>
+    <course name="4" length="5.37">
+      <m id="SA7" />
+      <m id="4" />
+      <m id="3" />
+      <m id="1" />
+      <m id="8" />
+      <m id="SA7" />
+    </course>
+    <course name="5" length="5.37">
+      <m id="SA7" />
+      <m id="5" />
+      <m id="4" />
+      <m id="2" />
+      <m id="1" />
+      <m id="SA7" />
+    </course>
+    <course name="6" length="5.37">
+      <m id="SA7" />
+      <m id="6" />
+      <m id="5" />
+      <m id="3" />
+      <m id="2" />
+      <m id="SA7" />
+    </course>
+    <course name="7" length="5.37">
+      <m id="SA7" />
+      <m id="7" />
+      <m id="6" />
+      <m id="4" />
+      <m id="3" />
+      <m id="SA7" />
+    </course>
+    <course name="8" length="5.37">
+      <m id="SA7" />
+      <m id="8" />
+      <m id="7" />
+      <m id="5" />
+      <m id="4" />
+      <m id="SA7" />
+    </course>
+  </courses>
 </data>

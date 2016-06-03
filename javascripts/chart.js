@@ -500,17 +500,20 @@ function orderedTimeFilter(array, fn)
   var item;
   var step = Math.max(1,Math.ceil((1-10)/(30-0.1)*(_zoom.scale()-0.1)+10))
   var i;
-  for(i = 0, len = array.length; i < len; i+=step)
+  for(i = 0, len = array.length; i < len-1; i+=step)
   {
     item = array[i];
     if (fn(item)) results.push(item);
     else break;
   }
-  for(i = i, len = array.length; i < len; i++)
+  if(results.length > 2)
   {
-    item = array[i];
-    if (fn(item)) results.push(item);
-    else break;
+    results.length = results.length-2;
+    for(i = i-(2*step), len = array.length; i < len; i++) {
+      item = array[i];
+      if (fn(item)) results.push(item);
+      else break;
+    }
   }
   return results;
 }

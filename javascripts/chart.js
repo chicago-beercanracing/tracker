@@ -266,7 +266,7 @@ function draw() {
             .value(minTime);
 
     d3.select("#slider")
-            .style("width", _sqSize + 100 + 'px')
+            .style("width", _sqSize + 200 + 'px')
             .call(_slider);
 
     _objects = _svg.append("svg")
@@ -335,6 +335,17 @@ function ToogleTimer()
     else{
         d3.select("#startbtn").text("Start");
     }
+}
+
+
+function SlowSpeed()
+{
+    _timerStep = _timerStep / 1.1;
+}
+
+function AccelerateSpeed()
+{
+    _timerStep = _timerStep * 1.1;
 }
 
 function tickFn()

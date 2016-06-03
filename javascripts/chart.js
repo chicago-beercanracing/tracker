@@ -133,6 +133,8 @@ var boatMarkLine = d3.svg.line()
 var _timerStep = 1;
 var _timerEnabled = true;
 var _slider;
+var _zoom;
+
 function draw() {
 
     var minTime = Infinity;
@@ -206,7 +208,7 @@ function draw() {
             .ticks(5)
             .tickSize(-_width);
 
-    var zoom = d3.behavior.zoom()
+    _zoom = d3.behavior.zoom()
             .x(_x)
             .y(_y)
             .scaleExtent([0.1, 100])
@@ -217,7 +219,7 @@ function draw() {
             .attr("height", height + _margin.top + _margin.bottom)
             .append("g")
             .attr("transform", "translate(" + _margin.left + "," + _margin.top + ")")
-            .call(zoom);
+            .call(_zoom);
 
     var defs = _svg.append("defs");
     d3.set(
@@ -380,14 +382,13 @@ function updateClasses()
             .map(function (d) {
                 return d.value;
             });
-            
-    var classes = [];        
+    var classes = [];
     _rdata[0].sections.forEach(function(section){
         if(checked.some(function(d){return d === section.id}))
         {//the section is selected
             section.boats.forEach(function(boat){
-                
-                 _cdata.forEach(function (boatData) {
+
+              _cdata.forEach(function (boatData) {
                     if(boatData.id === boat.id)
                     {
                         classes = classes.concat([boatData.clas]);
@@ -396,9 +397,7 @@ function updateClasses()
             });
         }
     });
-    
     classes = d3.set(classes).values();//keep only unique records
-            
     var clasList = d3.select("#classes")
     clasList.selectAll("label").remove()
     clasList.selectAll("input")
@@ -449,13 +448,13 @@ function updateBoats() {
             .map(function (d) {
                 return d.value;
             });
-            
-    var boats = [];        
+
+    var boats = [];
     _rdata[0].sections.forEach(function(section){
         if(checkedSections.some(function(d){return d === section.id}))
         {//the section is selected
             section.boats.forEach(function(boat){
-                
+
                  _cdata.forEach(function (boatData) {
                     if(checkedClasses.some(function(d){return d === boatData.clas})
                             && boat.id === boatData.id)
@@ -495,6 +494,27 @@ function updateBoats() {
     });
 }
 
+function orderedTimeFilter(array, fn)
+{
+  var results = [];
+  var item;
+  var step = Math.max(1,Math.ceil((1-10)/(30-0.1)*(_zoom.scale()-0.1)+10))
+  var i;
+  for(i = 0, len = array.length; i < len; i+=step)
+  {
+    item = array[i];
+    if (fn(item)) results.push(item);
+    else break;
+  }
+  for(i = i, len = array.length; i < len; i++)
+  {
+    item = array[i];
+    if (fn(item)) results.push(item);
+    else break;
+  }
+  return results;
+}
+
 function updatePos() {
     //remove all positions
     _objects.selectAll(".pos").remove();
@@ -527,11 +547,15 @@ function updatePos() {
             });
         })
                 .forEach(function (boat) {
-                    
-                    var positionsSelected = boat.positions.filter(function (d) {
-                                    return d.time <= _currMaxTime;
+
+                    //var positionsSelected = boat.positions.filter(function (d) {
+                    //                return d.time <= _currMaxTime;
+                    //            });//selects the positions where time is below the slider time
+
+                    var positionsSelected = orderedTimeFilter(boat.positions, function (d) {
+                                                        return d.time <= _currMaxTime;
                                 });//selects the positions where time is below the slider time
-                    
+
                     var points = _objects.selectAll(".pos[boat=" + boat.id + "]")
                             .data([positionsSelected[positionsSelected.length - 1]]) //only the last element to put tooltip on
                             .enter()
@@ -597,8 +621,9 @@ function zoomed() {
     _objects.selectAll(".pos")
             .attr("transform", transform);
 
-    _objects.selectAll("path")
-            .attr("d", line);
+    //_objects.selectAll("path")
+    //        .attr("d", line);
+    updatePos();
 }
 
 function reset() {

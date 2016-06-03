@@ -527,8 +527,13 @@ function updatePos() {
             });
         })
                 .forEach(function (boat) {
+                    
+                    var positionsSelected = boat.positions.filter(function (d) {
+                                    return d.time <= _currMaxTime;
+                                });//selects the positions where time is below the slider time
+                    
                     var points = _objects.selectAll(".pos[boat=" + boat.id + "]")
-                            .data([boat.positions[boat.positions.length - 1]]) //only the last element to put tooltip on
+                            .data([positionsSelected[positionsSelected.length - 1]]) //only the last element to put tooltip on
                             .enter()
                             .append("circle")
                             .classed("pos", true)
@@ -546,9 +551,7 @@ function updatePos() {
                             });
 
                     var trace = _objects.selectAll(".trace[boat=" + boat.id + "]")
-                            .data([boat.positions.filter(function (d) {
-                                    return d.time <= _currMaxTime;
-                                })])
+                            .data([positionsSelected])
                             .enter()
                             .append("path")
                             .classed("trace", true)

@@ -1,4 +1,12 @@
-<race rclon="-87.55695" rclat="41.85283" course="5" date="1464219900">
+<race rclon="-87.55695" rclat="41.85283" date="1464219900">
+  <course loop="true" ratio="1.33">
+    <m id="SA7" lon="-87.55675" lat="41.8529"/>
+    <m id="5" id="5" lon="-87.55683" lat="41.83467"/>
+    <m id="4" id="4" lon="-87.53955" lat="41.8401"/>
+    <m id="2" id="2" lon="-87.5395" lat="41.86567"/>
+    <m id="1" id="1" lon="-87.55683" lat="41.871"/>
+    <m id="SA7" />
+  </course>
   <section start="1464220800" id="2">
     <boat id="USA1">
       <p o="-87.55683" l="41.85284" t="1464202800" />

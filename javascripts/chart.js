@@ -19,37 +19,7 @@ asyncCounter.prototype.increment = function () {
     }
 };
 
-var myAsyncCounter = new asyncCounter(3, draw);
-
-var _wpdata;
-var _codata;
-d3.xml("../../common/waypoints.xml", function (error, data) {
-    if (error)
-        throw error;
-    // Convert the XML document to an array of objects.
-    // Note that querySelectorAll returns a NodeList, not a proper Array,
-    // so we must use map.call to invoke array methods.
-    _wpdata = [].map.call(data.querySelectorAll("wp"), function (wp) {
-        return {
-            id: wp.getAttribute("id"),
-            lat: parseFloat(wp.getAttribute("lat")),
-            lon: parseFloat(wp.getAttribute("lon"))
-        };
-    });
-
-    _codata = [].map.call(data.querySelectorAll("course"), function (course) {
-        return {
-            name: course.getAttribute("name"),
-            length: course.getAttribute("length"),
-            wps: [].map.call(course.querySelectorAll("m"), function (mark) {
-                return {
-                    id: mark.getAttribute("id")
-                };
-            })
-        };
-    });
-    myAsyncCounter.increment();
-});
+var myAsyncCounter = new asyncCounter(2, draw);
 
 var _cdata;
 d3.xml("../../common/boats.xml", function (error, data) {
@@ -72,6 +42,10 @@ d3.xml("../../common/boats.xml", function (error, data) {
     myAsyncCounter.increment();
 });
 
+function parseBool(value) {
+    return value.toLowerCase() == "true" ? true : false
+}
+
 var _rdata;
 d3.xml("racedata.xml", function (error, data) {
     if (error)
@@ -86,6 +60,19 @@ d3.xml("racedata.xml", function (error, data) {
             couse: race.getAttribute("course"),
             lat: race.getAttribute("rclat"),
             lon: race.getAttribute("rclon"),
+            course: [].map.call(race.querySelectorAll("course"), function (course) {
+                return {
+                    loop: parseBool(course.getAttribute("loop")),
+                    ratio: parseFloat(course.getAttribute("ratio")),
+                    marks: [].map.call(course.querySelectorAll("m"), function (mark) {
+                        return {
+                            id: mark.getAttribute("id"),
+                            lat: parseFloat(mark.getAttribute("lat")),
+                            lon: parseFloat(mark.getAttribute("lon"))
+                        };
+                    })
+                }
+            }),
             sections: [].map.call(race.querySelectorAll("section"), function (section) {
                 return {
                     id: section.getAttribute("id"),
@@ -167,13 +154,37 @@ function draw() {
             });
         });
     });
-    _wpdata.forEach(function (wp) {
+    _rdata[0].course[0].marks.forEach(function (wp) {
         minLat = Math.min(minLat, wp.lat);
         maxLat = Math.max(maxLat, wp.lat);
         minLon = Math.min(minLon, wp.lon);
         maxLon = Math.max(maxLon, wp.lon);
     });
 
+    //calculates the lat lon min and max to make a display appproximately squared rgarding distances displayed horizontally and vertically using the local approximation ratio
+    deltaLon = maxLon-minLon;
+    halfLon = deltaLon/2;
+    midLon = halfLon + minLon;
+    deltaLat = maxLat-minLat;
+    halfLat = deltaLat/2;
+    midLat = halfLat + minLat;
+    ratio = deltaLon/deltaLat;
+    if(ratio > _rdata[0].course[0].ratio)
+    {//widen lat
+        deltaLat = deltaLon/_rdata[0].course[0].ratio;
+        halfLat = deltaLat/2;
+    }
+    else
+    {//strech lon
+        deltaLon = deltaLat*_rdata[0].course[0].ratio;
+        halfLon = deltaLon/2;
+    }
+    
+    minLat = midLat - halfLat;
+    maxLat = midLat + halfLat;
+    minLon = midLon - halfLon;
+    maxLon = midLon + halfLon;
+    
     _currMaxTime = maxTime;
 
     _x = d3.scale.linear()
@@ -264,7 +275,7 @@ function draw() {
             .attr("height", height);
 
     var marks = _objects.selectAll(".dot")
-            .data(_wpdata)
+            .data(_rdata[0].course[0].marks)
             .enter().append("circle")
             .classed("dot", true)
             .attr("transform", transform)

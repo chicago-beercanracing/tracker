@@ -297,8 +297,8 @@ function draw() {
             .text("Race Committee");
 
     d3.select("#sections").selectAll("input")
-            .data(d3.set(_cdata.map(function (d) {
-                return d.section;
+            .data(d3.set(_rdata[0].sections.map(function (d) {
+                return d.id;
             })).values())
             .enter()
             .append("label")
@@ -369,18 +369,25 @@ function updateClasses()
             .map(function (d) {
                 return d.value;
             });
-    //find boats to be displayed from selected sections
-    var boats = _cdata.filter(function (boat) {
-        return checked.some(function (checkedVal) {
-            return boat.section === checkedVal;
-        })
+            
+    var classes = [];        
+    _rdata[0].sections.forEach(function(section){
+        if(checked.some(function(d){return d === section.id}))
+        {//the section is selected
+            section.boats.forEach(function(boat){
+                
+                 _cdata.forEach(function (boatData) {
+                    if(boatData.id === boat.id)
+                    {
+                        classes = classes.concat([boatData.clas]);
+                    }
+                });
+            });
+        }
     });
-
-    var classes = d3.set(boats.map(function (boat) {
-        return boat.clas;
-    }))
-            .values()
-
+    
+    classes = d3.set(classes).values();//keep only unique records
+            
     var clasList = d3.select("#classes")
     clasList.selectAll("label").remove()
     clasList.selectAll("input")
@@ -414,7 +421,7 @@ function slide(evt, posixTime) {
 
 function updateBoats() {
     //find selected sections
-    var checked = d3.select("#classes")
+    var checkedClasses = d3.select("#classes")
             .selectAll("input")[0] //0 because select keeps the structure and out inputs are within labels
             .filter(function (d) {
                 return d.checked;
@@ -423,12 +430,31 @@ function updateBoats() {
                 return d.value;
             });
 
-    //find boats to be displayed from selected sections
-    var boats = _cdata.filter(function (boat) {
-        return checked.some(function (checkedVal) {
-            return boat.clas === checkedVal;
-        });
-    });
+    var checkedSections = d3.select("#sections")
+            .selectAll("input")[0] //0 because select keeps the structure and out inputs are within labels
+            .filter(function (d) {
+                return d.checked;
+            })
+            .map(function (d) {
+                return d.value;
+            });
+            
+    var boats = [];        
+    _rdata[0].sections.forEach(function(section){
+        if(checkedSections.some(function(d){return d === section.id}))
+        {//the section is selected
+            section.boats.forEach(function(boat){
+                
+                 _cdata.forEach(function (boatData) {
+                    if(checkedClasses.some(function(d){return d === boatData.clas})
+                            && boat.id === boatData.id)
+                    {
+                        boats = boats.concat([boatData]);
+                    }
+                });
+            });
+        }
+    }); 
 
     //add selected boats and colors
     var blist = d3.select("#boats")

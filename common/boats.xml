@@ -1,6 +1,6 @@
 <boats>
   <boat id="USA52293" name="Sorcerer" color="#172969" section="Spin 3" class="36.7" rating="0" flag="4.png" />
-  <boat id="USA3" name="Fake Boat3" color="#3eacec" section="4" class="36.7" rating="0" flag="4.png" />
-  <boat id="USA1" name="Fake Boat" color="#0551be" section="1" class="T10" rating="0" flag="1.png" />
-  <boat id="USA2" name="Fake Boat2" color="#b61e23" section="2" class="ORR 2" rating="0" flag="2.png" />
+  <boat id="USA3" name="Fake Boat USA3" color="#3eacec" section="4" class="36.7" rating="0" flag="4.png" />
+  <boat id="USA1" name="Fake Boat USA1" color="#0551be" section="1" class="T10" rating="0" flag="1.png" />
+  <boat id="USA2" name="Fake Boat USA2" color="#b61e23" section="2" class="ORR 2" rating="0" flag="2.png" />
 </boats>

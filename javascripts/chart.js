@@ -429,9 +429,13 @@ function slide(evt, posixTime) {
     updatePos();
 }
 
+var _checkedClasses;
+var _selectedBoats;
+var _selectedBoatIDs;
+
 function updateBoats() {
     //find selected sections
-    var checkedClasses = d3.select("#classes")
+    _checkedClasses = d3.select("#classes")
             .selectAll("input")[0] //0 because select keeps the structure and out inputs are within labels
             .filter(function (d) {
                 return d.checked;
@@ -439,6 +443,15 @@ function updateBoats() {
             .map(function (d) {
                 return d.value;
             });
+     //find boats to be displayed from selected sections
+    _selectedBoats = _cdata.filter(function (boat) {
+        return _checkedClasses.some(function (checkedVal) {
+            return boat.clas === checkedVal;
+        });
+    });
+    _selectedBoatIDs = _selectedBoats.map(function (boat) {
+        return boat.id;
+    });
 
     var checkedSections = d3.select("#sections")
             .selectAll("input")[0] //0 because select keeps the structure and out inputs are within labels
@@ -456,7 +469,7 @@ function updateBoats() {
             section.boats.forEach(function(boat){
 
                  _cdata.forEach(function (boatData) {
-                    if(checkedClasses.some(function(d){return d === boatData.clas})
+                    if(_checkedClasses.some(function(d){return d === boatData.clas})
                             && boat.id === boatData.id)
                     {
                         boats = boats.concat([boatData]);
@@ -522,39 +535,12 @@ function updatePos() {
     //remove all positions
     _objects.selectAll(".pos").remove();
     _objects.selectAll(".trace").remove();
-    //find selected sections
-    var checked = d3.select("#classes")
-            .selectAll("input")[0] //0 because select keeps the structure and out inputs are within labels
-            .filter(function (d) {
-                return d.checked;
-            })
-            .map(function (d) {
-                return d.value;
-            });
-
-    //find boats to be displayed from selected sections
-    var boats = _cdata.filter(function (boat) {
-        return checked.some(function (checkedVal) {
-            return boat.clas === checkedVal;
-        });
-    });
-    var boatsSel = boats.map(function (boat) {
-        return boat.id;
-    });
 
     //add positions with time lower than given as parameter
     _rdata[0].sections.forEach(function (section) {
         section.boats.filter(function (boat) {
-            return boatsSel.some(function (boatID) {
-                return boat.id === boatID;
-            });
-        })
-                .forEach(function (boat) {
-
-                    //var positionsSelected = boat.positions.filter(function (d) {
-                    //                return d.time <= _currMaxTime;
-                    //            });//selects the positions where time is below the slider time
-
+                if(_selectedBoatIDs.some(function (boatID) { return boat.id === boatID; }))
+                {
                     var positionsSelected = orderedTimeFilter(boat.positions, function (d) {
                                                         return d.time <= _currMaxTime;
                                 });//selects the positions where time is below the slider time
@@ -571,7 +557,7 @@ function updatePos() {
                             .style("opacity", 0)
                             .append("svg:title")
                             .text(function (d) {
-                                var boatObj = boats.filter(function (bo) {
+                                var boatObj = _selectedBoats.filter(function (bo) {
                                     return bo.id === boat.id;
                                 });
                                 return boatObj[0].name;
@@ -585,29 +571,35 @@ function updatePos() {
                             .attr("d", line)
                             .attr("fill", "none")
                             .attr("stroke", function (d) {
-                                var boatObj = boats.filter(function (bo) {
+                                var boatObj = _selectedBoats.filter(function (bo) {
                                     return bo.id === boat.id;
                                 });
                                 return boatObj[0].color;
                             })
                             .attr("stroke-width", 2)
                             .attr("marker-end", function (d) {
-                                var boatObj = boats.filter(function (bo) {
+                                var boatObj = _selectedBoats.filter(function (bo) {
                                     return bo.id === boat.id;
                                 });
                                 return "url(#boat" + boatObj[0].color.replace("#", "") + ")";
                             });
-                });
+                }
+        });
     });
 }
 
 var line = d3.svg.line()
-        .x(function (d) {
-            return _x(d.lon);
-        })
-        .y(function (d) {
-            return _y(d.lat);
-        });
+        .x(returnTransformedLon)
+        .y(returnTransformedLat);
+        
+function returnTransformedLon(d)
+{
+    return _x(d.lon);
+}
+function returnTransformedLat(d)
+{
+    return _y(d.lat);
+}
 
 //We use the same function to transform Marks and Boat positions
 function transform(d) {

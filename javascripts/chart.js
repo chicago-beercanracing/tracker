@@ -181,12 +181,12 @@ function draw() {
         deltaLon = deltaLat*_rdata[0].course[0].ratio;
         halfLon = deltaLon/2;
     }
-    
+
     minLat = midLat - halfLat;
     maxLat = midLat + halfLat;
     minLon = midLon - halfLon;
     maxLon = midLon + halfLon;
-    
+
     _currMaxTime = maxTime;
 
     _x = d3.scale.linear()
@@ -318,7 +318,7 @@ function draw() {
     updateClasses();
     updateBoats();
     //updatePos();
-    
+
     setInterval(tickFn, 100); //100 ms interval
     _timerStep = (maxTime-minTime)/600; //600 * 100ms interval = 1 min total replay time
     _timerEnabled = true;
@@ -363,7 +363,7 @@ function tickFn()
             ToogleTimer();
         }
     }
-    
+
 }
 
 function inputSectionClick() {
@@ -477,7 +477,7 @@ function updateBoats() {
                 });
             });
         }
-    }); 
+    });
 
     //add selected boats and colors
     var blist = d3.select("#boats")
@@ -507,28 +507,62 @@ function updateBoats() {
     });
 }
 
-function orderedTimeFilter(array, fn)
-{
+function orderedTimeFilter(array, currMaxTime, xDomain, yDomain) {
+    var visiblePaths = [];
   var results = [];
   var item;
   var step = Math.max(1,Math.ceil((1-10)/(30-0.1)*(_zoom.scale()-0.1)+10))
   var i;
+  var prevOut = false;
+  var prev;
   for(i = 0, len = array.length; i < len-1; i+=step)
   {
-    item = array[i];
-    if (fn(item)) results.push(item);
-    else break;
+      item = array[i];
+      var currVis = isPosVisible(item, xDomain, yDomain);
+      if (prevOut && !currVis) {
+          if(results.length > 0){
+          visiblePaths.push(results);
+          results = [];}
+          prev=item;
+          continue;
+      }
+      if(prevOut && currVis){
+      results.push(prev);}
+      if(!currVis){prevOut = true;}
+      else {prevOut = false}
+
+      if (item.time < currMaxTime) results.push(item);
+      else break;
+      prev=item;
   }
   if(results.length > 2)
   {
+  //if we have elements, we remove the last two and insert precisely defined gps points
     results.length = results.length-2;
     for(i = i-(2*step), len = array.length; i < len; i++) {
       item = array[i];
-      if (fn(item)) results.push(item);
+      if (item.time < currMaxTime) results.push(item);
       else break;
     }
   }
-  return results;
+  else
+  {
+  //if we do not have at least two elements, we inserts the last elements anyways which should 
+  //contain the last known position of the boat
+    for(i = i-(2*step), len = array.length; i < len; i++) {
+      item = array[i];
+      if(item != null){
+      if (item.time < currMaxTime) results.push(item);
+      else break;}
+    }
+  }
+  if(results.length >0){
+  visiblePaths.push(results);}
+  return visiblePaths;
+}
+
+function isPosVisible(pos, xDomain, yDomain) {
+    return xDomain[0] <= pos.lon && xDomain[1] >= pos.lon && yDomain[0] <= pos.lat && yDomain[1] >= pos.lat;
 }
 
 function updatePos() {
@@ -541,12 +575,12 @@ function updatePos() {
         section.boats.filter(function (boat) {
                 if(_selectedBoatIDs.some(function (boatID) { return boat.id === boatID; }))
                 {
-                    var positionsSelected = orderedTimeFilter(boat.positions, function (d) {
-                                                        return d.time <= _currMaxTime;
-                                });//selects the positions where time is below the slider time
-
+                    var positionsSelected = orderedTimeFilter(boat.positions, _currMaxTime, _x.domain(), _y.domain());//selects the positions where time is below the slider time
+                    var numPaths = positionsSelected.length;
+                    if(numPaths >0){
+                    var lastPath = positionsSelected[positionsSelected.length - 1];
                     var points = _objects.selectAll(".pos[boat=" + boat.id + "]")
-                            .data([positionsSelected[positionsSelected.length - 1]]) //only the last element to put tooltip on
+                            .data([lastPath[lastPath.length - 1]]) //only the last element to put tooltip on
                             .enter()
                             .append("circle")
                             .classed("pos", true)
@@ -562,9 +596,9 @@ function updatePos() {
                                 });
                                 return boatObj[0].name;
                             });
-
+                    for(i = 0;i<positionsSelected.length; i++){
                     var trace = _objects.selectAll(".trace[boat=" + boat.id + "]")
-                            .data([positionsSelected])
+                            .data([positionsSelected[i]])
                             .enter()
                             .append("path")
                             .classed("trace", true)
@@ -576,13 +610,17 @@ function updatePos() {
                                 });
                                 return boatObj[0].color;
                             })
-                            .attr("stroke-width", 2)
-                            .attr("marker-end", function (d) {
+                            .attr("stroke-width", 2);
+                    if(i == positionsSelected.length -1)
+                    {//append the boat marker at the end of the last visible path
+                      trace.attr("marker-end", function (d) {
                                 var boatObj = _selectedBoats.filter(function (bo) {
                                     return bo.id === boat.id;
                                 });
                                 return "url(#boat" + boatObj[0].color.replace("#", "") + ")";
-                            });
+                            })
+                    }
+                    }}
                 }
         });
     });

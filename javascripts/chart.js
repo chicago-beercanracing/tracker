@@ -609,7 +609,7 @@ function updatePos() {
                             trace.attr("d", line);
 
                         var lastTrace = _objects.selectAll(".traceboat" + boat.id);
-                        lastTrace = lastTrace[lastTrace.length-1];
+                        lastTrace = lastTrace[lastTrace.length-1][0];
                         lastTrace.attr("marker-end", function (d) {
                                   return "url(#boat" + boatObj[0].id + ")";
                               })

@@ -567,8 +567,8 @@ function isPosVisible(pos, xDomain, yDomain) {
 
 function updatePos() {
     //remove all positions
-    _objects.selectAll(".pos").remove();
-    _objects.selectAll(".trace").remove();
+    //_objects.selectAll(".pos").remove();
+    //_objects.selectAll(".trace").remove();
 
     //add positions with time lower than given as parameter
     _rdata[0].sections.forEach(function (section) {
@@ -577,50 +577,39 @@ function updatePos() {
                 {
                     var positionsSelected = orderedTimeFilter(boat.positions, _currMaxTime, _x.domain(), _y.domain());//selects the positions where time is below the slider time
                     var numPaths = positionsSelected.length;
-                    if(numPaths >0){
-                    var lastPath = positionsSelected[positionsSelected.length - 1];
-                    var points = _objects.selectAll(".pos[boat=" + boat.id + "]")
-                            .data([lastPath[lastPath.length - 1]]) //only the last element to put tooltip on
-                            .enter()
-                            .append("circle")
-                            .classed("pos", true)
-                            .attr("transform", transform)
-                            .attr("r", 10)
-                            .attr("boat", boat.id)
-                            .attr("fill", "#000")
-                            .style("opacity", 0)
-                            .append("svg:title")
-                            .text(function (d) {
-                                var boatObj = _selectedBoats.filter(function (bo) {
-                                    return bo.id === boat.id;
-                                });
-                                return boatObj[0].name;
-                            });
-                    for(i = 0;i<positionsSelected.length; i++){
-                    var trace = _objects.selectAll(".trace[boat=" + boat.id + "]")
-                            .data([positionsSelected[i]])
-                            .enter()
-                            .append("path")
-                            .classed("trace", true)
-                            .attr("d", line)
-                            .attr("fill", "none")
-                            .attr("stroke", function (d) {
-                                var boatObj = _selectedBoats.filter(function (bo) {
-                                    return bo.id === boat.id;
-                                });
-                                return boatObj[0].color;
-                            })
-                            .attr("stroke-width", 2);
-                    if(i == positionsSelected.length -1)
-                    {//append the boat marker at the end of the last visible path
-                      trace.attr("marker-end", function (d) {
-                                var boatObj = _selectedBoats.filter(function (bo) {
-                                    return bo.id === boat.id;
-                                });
-                                return "url(#boat" + boatObj[0].color.replace("#", "") + ")";
-                            })
+                   if (numPaths > 0)
+                    {
+                        var lastPath = positionsSelected[positionsSelected.length - 1];
+                        var points = _objects.selectAll(".posboat" + boat.id)
+                                .data([lastPath[lastPath.length - 1]])
+                            points.enter()
+                                .append("circle")
+                                .classed("posboat" + boat.id, true)
+                                .attr("transform", transform)
+                                .attr("r", 10)
+                                .style("opacity", 0)
+                                .append("svg:title")
+                                .text(boatObj[0].name);
+                            points.exit().remove();
+                            points.attr("transform", transform);
+            
+                        var trace = _objects.selectAll(".traceboat" + boat.id)
+                                .data(positionsSelected)
+                            trace.enter()
+                                .append("path")
+                                .classed("traceboat" + boat.id, true)
+                                .attr("d", line)
+                                .attr("fill", "none")
+                                .attr("stroke", boatObj[0].color)
+                                .attr("stroke-width", 2);
+                            trace.exit().remove();
+                            trace.attr("d", line);
+
+                        var lastTrace = _objects.selectAll(".traceboat" + boat.id).last();
+                        lastTrace.attr("marker-end", function (d) {
+                                  return "url(#boat" + boatObj[0].id + ")";
+                              })
                     }
-                    }}
                 }
         });
     });

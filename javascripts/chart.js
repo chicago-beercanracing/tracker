@@ -575,6 +575,9 @@ function updatePos() {
         section.boats.filter(function (boat) {
                 if(_selectedBoatIDs.some(function (boatID) { return boat.id === boatID; }))
                 {
+                     var boatObj = _selectedBoats.filter(function (bo) {
+                        return bo.id === boat.id;
+                    });
                     var positionsSelected = orderedTimeFilter(boat.positions, _currMaxTime, _x.domain(), _y.domain());//selects the positions where time is below the slider time
                     var numPaths = positionsSelected.length;
                    if (numPaths > 0)
